@@ -148,7 +148,7 @@ jobs:
         run: |
           which pytest
           pytest tests -v          
-build_alt:
+  build_alt:
     needs: build
     runs-on: ubuntu-20.04
     defaults:
