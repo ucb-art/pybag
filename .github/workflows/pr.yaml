@@ -86,7 +86,7 @@ jobs:
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
-        id: cache
+        id: cache-pybag
   test:
     needs: build
     runs-on: ubuntu-20.04
@@ -134,7 +134,7 @@ jobs:
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
-        id: cache
+        id: cache-pybag
       - name: Run test
         id: run-pytest
         run: |
