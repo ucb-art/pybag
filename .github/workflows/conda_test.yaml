@@ -35,7 +35,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs
           key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
+            conda-test-conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
             hashFiles('conda_test.yml') }}-${{
             env.CACHE_NUMBER }}
@@ -81,7 +81,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs
           key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
+            conda-test-conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
             hashFiles('conda_test.yml') }}-${{
             env.CACHE_NUMBER }}
