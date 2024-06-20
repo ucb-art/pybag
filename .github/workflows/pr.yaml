@@ -45,7 +45,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: environment.yml
           auto-activate-base: false
-          use-only-tar-bz2: true
       - name: Cache Conda env
         uses: actions/cache@v4
         with:
