@@ -33,7 +33,7 @@ jobs:
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
+          path: ${{ env.CONDA }}/envs/conda-test
           key:
             conda-test-conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
@@ -79,7 +79,7 @@ jobs:
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
+          path: ${{ env.CONDA }}/envs/conda-test
           key:
             conda-test-conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
