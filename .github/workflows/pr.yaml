@@ -2,7 +2,7 @@ name: pybag-pr-ci
 
 on:
   - push
-  - schedule
+  - schedule:
     - cron: '00 9 * * * '  # 9AM UTC = 2AM PST
 
 env:
