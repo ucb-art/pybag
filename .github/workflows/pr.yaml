@@ -1,6 +1,9 @@
 name: pybag-pr-ci
 
-on: [push]
+on:
+  - push
+  - schedule
+    - cron: '00 9 * * * '  # 9AM UTC = 2AM PST
 
 env:
   CONDA_ENV_NAME: bag_py3d7_c
@@ -58,14 +61,14 @@ jobs:
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
-        id: cache
-      - name: Update environment
+        id: cache-conda
+      - name: Update conda environment
         run: |
           echo "CONDA=$CONDA"
           conda env update -n ${{ env.CONDA_ENV_NAME }} -f environment.yml
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-conda.outputs.cache-hit != 'true'
       - name: Install additional dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-conda.outputs.cache-hit != 'true'
         run: |
           cd setup
           mkdir install
@@ -78,8 +81,9 @@ jobs:
       - name: Build cbag and pybag
         id: cpp-build
         run: |
-          which python
-          python setup.py build
+          export PYBAG_PYTHON=python
+          echo "PYBAG_PYTHON=$PYBAG_PYTHON"
+          ./run_test.sh
       - name: Cache pybag build
         uses: actions/cache@v3
         with:
@@ -132,7 +136,7 @@ jobs:
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
-        id: cache
+        id: cache-conda
       - name: Cache pybag build
         uses: actions/cache@v3
         with:
@@ -150,79 +154,3 @@ jobs:
         run: |
           which pytest
           pytest tests -v
-  build_alt:
-    needs: build
-    runs-on: ubuntu-20.04
-    defaults:
-      run:
-        shell: bash -el {0}
-    continue-on-error: true
-    outputs:
-      pytestOutput: ${{ steps.unit-tests.outputs.test }}
-    strategy:
-      matrix:
-        python-version: ["3.7"]
-    steps:
-      - name: Install packages
-        run: |
-          sudo apt update
-          sudo apt -y install \
-            autoconf \
-            curl \
-            gcc-8 \
-            g++-8 \
-            git \
-            libtool \
-            libltdl-dev \
-            pkg-config \
-            make \
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v3.0.4
-        with:
-          activate-environment: ${{ env.CONDA_ENV_NAME }}
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-      - name: Save Conda Env
-        # Workaround, this isn't working otherwise.
-        run: |
-          echo "CONDA=$CONDA"
-          echo "CONDA=$CONDA" >> "$GITHUB_ENV"
-      - name: Cache Conda env
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
-          key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
-            steps.get-date.outputs.today }}-${{
-            hashFiles('environment.yml') }}-${{
-            env.CACHE_NUMBER }}
-        env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
-          CACHE_NUMBER: 0
-        id: cache
-      - name: Update environment
-        run: |
-          echo "CONDA=$CONDA"
-          conda env update -n ${{ env.CONDA_ENV_NAME }} -f environment.yml
-        if: steps.cache.outputs.cache-hit != 'true'
-      - name: Install additional dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          cd setup
-          mkdir install
-          cp setup_script.sh install/
-          cp render_template.py install/
-          cp project-config.template install/
-          cd install
-          ./setup_script.sh
-          cd ../../
-      - name: Build cbag and pybag
-        id: cpp-build
-        run: |
-          export PYBAG_PYTHON=python
-          echo "PYBAG_PYTHON=$PYBAG_PYTHON"
-          ./run_test.sh
