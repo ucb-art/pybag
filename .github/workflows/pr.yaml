@@ -41,6 +41,11 @@ jobs:
           activate-environment: ${{ env.CONDA_ENV_NAME }}
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
+      - name: Save Conda Env
+        # Workaround, this isn't working otherwise.
+        run: |
+          echo "CONDA=$CONDA"
+          echo "CONDA=$CONDA" >> "$GITHUB_ENV"
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
@@ -110,6 +115,11 @@ jobs:
           activate-environment: bag_py3d7_c
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
+      - name: Save Conda Env
+        # Workaround, this isn't working otherwise.
+        run: |
+          echo "CONDA=$CONDA"
+          echo "CONDA=$CONDA" >> "$GITHUB_ENV"
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
@@ -149,11 +159,23 @@ jobs:
     continue-on-error: true
     outputs:
       pytestOutput: ${{ steps.unit-tests.outputs.test }}
-      mypyOutput: ${{ steps.type-checks.outputs.test }}
     strategy:
       matrix:
         python-version: ["3.7"]
     steps:
+      - name: Install packages
+        run: |
+          sudo apt update
+          sudo apt -y install \
+            autoconf \
+            curl \
+            gcc-8 \
+            g++-8 \
+            git \
+            libtool \
+            libltdl-dev \
+            pkg-config \
+            make \
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -161,14 +183,18 @@ jobs:
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v3.0.4
         with:
-          activate-environment: bag_py3d7_c
+          activate-environment: ${{ env.CONDA_ENV_NAME }}
           python-version: ${{ matrix.python-version }}
-          environment-file: environment.yml
           auto-activate-base: false
+      - name: Save Conda Env
+        # Workaround, this isn't working otherwise.
+        run: |
+          echo "CONDA=$CONDA"
+          echo "CONDA=$CONDA" >> "$GITHUB_ENV"
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
+          path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
@@ -180,22 +206,23 @@ jobs:
         id: cache
       - name: Update environment
         run: |
-          echo "env.conda=${{ env.CONDA }}"
-          conda env update -n bag_py3d7_c -f environment.yml
+          echo "CONDA=$CONDA"
+          conda env update -n ${{ env.CONDA_ENV_NAME }} -f environment.yml
         if: steps.cache.outputs.cache-hit != 'true'
-      # - name: Load cached dependencies
-        # id: cached-dependencies
-        # uses: actions/cache@v3
-        # with:
-        #   path: setup/install
-        #   key: cmake-dependencies-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Update environment variables
+      - name: Install additional dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          export PYBAG_PYTHON=python
-          which $PYBAG_PYTHON
-      - name: Build
+          cd setup
+          mkdir install
+          cp setup_script.sh install/
+          cp render_template.py install/
+          cp project-config.template install/
+          cd install
+          ./setup_script.sh
+          cd ../../
+      - name: Build cbag and pybag
         id: cpp-build
         run: |
-          which python
+          export PYBAG_PYTHON=python
+          echo "PYBAG_PYTHON=$PYBAG_PYTHON"
           ./run_test.sh
-  
