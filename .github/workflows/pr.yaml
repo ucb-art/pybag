@@ -74,7 +74,7 @@ jobs:
         run: |
           cd setup
           mkdir install
-          cp setup_script.sh install/
+          cp * install/
           cd install
           ./setup_script.sh
           cd ../../
