@@ -43,8 +43,8 @@ jobs:
         with:
           activate-environment: bag_py3d7_c
           python-version: ${{ matrix.python-version }}
-          environment-file: environment.yml
           auto-activate-base: false
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
       - name: Cache Conda env
         uses: actions/cache@v4
         with:
