@@ -31,7 +31,8 @@ jobs:
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
+          # path: ${{ env.CONDA }}/envs
+          path: $CONDA/envs
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
