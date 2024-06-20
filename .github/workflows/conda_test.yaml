@@ -2,6 +2,9 @@ name: conda-test
 
 on: [push]
 
+env:
+  CONDA_ENV_NAME: conda_test
+
 jobs:
   conda-cache:
     runs-on: ubuntu-20.04
@@ -33,7 +36,7 @@ jobs:
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/conda-test
+          path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
             conda-test-conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
@@ -79,7 +82,7 @@ jobs:
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/conda-test
+          path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
             conda-test-conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
