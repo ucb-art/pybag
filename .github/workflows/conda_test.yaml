@@ -2,11 +2,6 @@ name: conda-test
 
 on: [push]
 
-# env:
-#   POETRY_VERSION: "1.2.0"
-#   CONDA_PATH: "conda_dir"
-#   CONDA_ENV_PATH: "${CONDA_PATH}/env/bag_py3d7_c"
-
 jobs:
   conda-cache:
     runs-on: ubuntu-20.04
@@ -31,6 +26,8 @@ jobs:
           activate-environment: bag_py3d7_c
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
+      - name: check env
+        run: echo "CONDA=$CONDA"
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
@@ -38,82 +35,18 @@ jobs:
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
-            hashFiles('environment.yml') }}-${{
+            hashFiles('conda_test.yml') }}-${{
             env.CACHE_NUMBER }}
         env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
         id: cache
       - name: Update environment
         run: |
-          echo "env.conda=${{ env.CONDA }}"
-          conda env update -n bag_py3d7_c -f environment.yml
+          echo "CONDA=$CONDA"
+          conda env update -n bag_py3d7_c -f conda_test.yml
         if: steps.cache.outputs.cache-hit != 'true'
   conda-cache-load:
-    needs: build
-    runs-on: ubuntu-20.04
-    defaults:
-      run:
-        shell: bash -el {0}
-    continue-on-error: true
-    outputs:
-      pytestOutput: ${{ steps.unit-tests.outputs.test }}
-      mypyOutput: ${{ steps.type-checks.outputs.test }}
-    strategy:
-      matrix:
-        python-version: ["3.7"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v3.0.4
-        with:
-          activate-environment: bag_py3d7_c
-          python-version: ${{ matrix.python-version }}
-          environment-file: environment.yml
-          auto-activate-base: false
-      - name: Cache Conda env
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs
-          key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
-            steps.get-date.outputs.today }}-${{
-            hashFiles('environment.yml') }}-${{
-            env.CACHE_NUMBER }}
-        env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
-          CACHE_NUMBER: 0
-        id: cache
-      - name: Update environment
-        run: |
-          echo "env.conda=${{ env.CONDA }}"
-          conda env update -n bag_py3d7_c -f environment.yml
-        if: steps.cache.outputs.cache-hit != 'true'
-      - name: Load cached dependencies
-        id: cached-dependencies
-        uses: actions/cache@v3
-        with:
-          path: setup/install
-          key: cmake-dependencies-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Update environment variables
-        run: |
-          export PYBAG_PYTHON=python
-          which $PYBAG_PYTHON
-      - name: Build
-        id: cpp-build
-        run: |
-          which python
-          python setup.py build
-      - name: Run test
-        id: run-pytest
-        run: |
-          which pytest
-          pytest tests -v          
-  build_alt:
-    needs: build
+    needs: conda-cache
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -143,9 +76,8 @@ jobs:
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
-            hashFiles('environment.yml') }}-${{
+            hashFiles('conda_test.yml') }}-${{
             env.CACHE_NUMBER }}
         env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
         id: cache

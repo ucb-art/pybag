@@ -1,0 +1,8 @@
+name: conda_test
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - numpy-base>=1.21.5
+  
