@@ -23,7 +23,7 @@ jobs:
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v3.0.4
         with:
-          activate-environment: bag_py3d7_c
+          activate-environment: conda_test
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
       - name: check env
@@ -43,7 +43,8 @@ jobs:
       - name: Update environment
         run: |
           echo "CONDA=$CONDA"
-          conda env update -n bag_py3d7_c -f conda_test.yml
+          conda env update -n conda_test -f conda_test.yml
+          ls $CONDA/envs/
         if: steps.cache.outputs.cache-hit != 'true'
   conda-cache-load:
     needs: conda-cache
@@ -66,7 +67,7 @@ jobs:
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v3.0.4
         with:
-          activate-environment: bag_py3d7_c
+          activate-environment: conda_test
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
       - name: Cache Conda env
