@@ -1,9 +1,9 @@
 name: pybag-pr-ci
 
 on:
-  - push
-  - schedule:
-    - cron: '00 9 * * * '  # 9AM UTC = 2AM PST
+  push:
+  schedule:
+    - cron: '0 9 * * *'  # 9AM UTC = 2AM PST
 
 env:
   CONDA_ENV_NAME: bag_py3d7_c
