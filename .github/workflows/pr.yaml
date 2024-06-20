@@ -8,7 +8,7 @@ env:
   CONDA_ENV_PATH: "${CONDA_PATH}/env/bag_py3d7_c"
 
 jobs:
-  tests:
+  build:
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -63,15 +63,25 @@ jobs:
           conda env update -n bag_py3d7_c -f
           environment.yml
         if: steps.cache.outputs.cache-hit != 'true'
+      - name: Load cached dependencies
+        id: cached-dependencies
+        uses: actions/cache@v3
+        with:
+          path: setup/install
+          key: cmake-dependencies-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install additional dependencies
+        if: steps.cached-dependencies.outputs.cache-hit != 'true'
         run: |
           cd setup
+          mkdir install
+          cp setup_script.sh install/
+          cd install
           ./setup_script.sh
-          cd ../
+          cd ../../
       - name: Update environment variables
         run: |
           export PYBAG_PYTHON=python
-          echo ${PYBAG_PYTHON}
+          which $PYBAG_PYTHON
       - name: Try to build
         id: cpp-build
         run: |
