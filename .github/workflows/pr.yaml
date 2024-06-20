@@ -47,7 +47,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
       - name: Update environment variables
         run:
-          export PYBAG_PYTHON=pýthon
+          export PYBAG_PYTHON=python
+          echo ${PYBAG_PYTHON}
       - name: Try to build
         id: cpp-build
         run: |
