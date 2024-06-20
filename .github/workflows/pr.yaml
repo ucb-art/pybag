@@ -74,7 +74,9 @@ jobs:
         run: |
           cd setup
           mkdir install
-          cp * install/
+          cp setup_script.sh install/
+          cp render_template.py install/
+          cp project-config.template install/
           cd install
           ./setup_script.sh
           cd ../../
