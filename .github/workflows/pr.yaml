@@ -3,9 +3,7 @@ name: pybag-pr-ci
 on: [push]
 
 env:
-  POETRY_VERSION: "1.2.0"
-  CONDA_PATH: "conda_dir"
-  CONDA_ENV_PATH: "${CONDA_PATH}/env/bag_py3d7_c"
+  CONDA_ENV_NAME: bag_py3d7_c
 
 jobs:
   build:
@@ -16,7 +14,6 @@ jobs:
     continue-on-error: true
     outputs:
       pytestOutput: ${{ steps.unit-tests.outputs.test }}
-      mypyOutput: ${{ steps.type-checks.outputs.test }}
     strategy:
       matrix:
         python-version: ["3.7"]
@@ -41,14 +38,13 @@ jobs:
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v3.0.4
         with:
-          activate-environment: bag_py3d7_c
+          activate-environment: ${{ env.CONDA_ENV_NAME }}
           python-version: ${{ matrix.python-version }}
-          environment-file: environment.yml
           auto-activate-base: false
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
+          path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
@@ -60,17 +56,11 @@ jobs:
         id: cache
       - name: Update environment
         run: |
-          echo "env.conda=${{ env.CONDA }}"
-          conda env update -n bag_py3d7_c -f environment.yml
+          echo "CONDA=$CONDA"
+          conda env update -n ${{ env.CONDA_ENV_NAME }} -f environment.yml
         if: steps.cache.outputs.cache-hit != 'true'
-      # - name: Load cached dependencies
-        # id: cached-dependencies
-        # uses: actions/cache@v3
-        # with:
-        #   path: setup/install
-        #   key: cmake-dependencies-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install additional dependencies
-        if: steps.cached-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           cd setup
           mkdir install
@@ -80,15 +70,23 @@ jobs:
           cd install
           ./setup_script.sh
           cd ../../
-      - name: Update environment variables
-        run: |
-          export PYBAG_PYTHON=python
-          which $PYBAG_PYTHON
-      - name: Try to build
+      - name: Build cbag and pybag
         id: cpp-build
         run: |
           which python
           python setup.py build
+      - name: Cache pybag build
+        uses: actions/cache@v3
+        with:
+          path: _build
+          key:
+            build-${{ runner.os }}--${{ runner.arch }}--${{
+            steps.get-date.outputs.today }}-${{
+            env.CACHE_NUMBER }}
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
+        id: cache
   test:
     needs: build
     runs-on: ubuntu-20.04
@@ -98,7 +96,6 @@ jobs:
     continue-on-error: true
     outputs:
       pytestOutput: ${{ steps.unit-tests.outputs.test }}
-      mypyOutput: ${{ steps.type-checks.outputs.test }}
     strategy:
       matrix:
         python-version: ["3.7"]
@@ -112,12 +109,11 @@ jobs:
         with:
           activate-environment: bag_py3d7_c
           python-version: ${{ matrix.python-version }}
-          environment-file: environment.yml
           auto-activate-base: false
       - name: Cache Conda env
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
+          path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
@@ -127,31 +123,23 @@ jobs:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
         id: cache
-      - name: Update environment
-        run: |
-          echo "env.conda=${{ env.CONDA }}"
-          conda env update -n bag_py3d7_c -f environment.yml
-        if: steps.cache.outputs.cache-hit != 'true'
-      - name: Load cached dependencies
-        id: cached-dependencies
+      - name: Cache pybag build
         uses: actions/cache@v3
         with:
-          path: setup/install
-          key: cmake-dependencies-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Update environment variables
-        run: |
-          export PYBAG_PYTHON=python
-          which $PYBAG_PYTHON
-      - name: Build
-        id: cpp-build
-        run: |
-          which python
-          python setup.py build
+          path: _build
+          key:
+            build-${{ runner.os }}--${{ runner.arch }}--${{
+            steps.get-date.outputs.today }}-${{
+            env.CACHE_NUMBER }}
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
+        id: cache
       - name: Run test
         id: run-pytest
         run: |
           which pytest
-          pytest tests -v          
+          pytest tests -v
   build_alt:
     needs: build
     runs-on: ubuntu-20.04
