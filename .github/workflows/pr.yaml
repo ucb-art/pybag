@@ -144,7 +144,7 @@ jobs:
           which python
           python setup.py build
       - name: Run test
-        id: cpp-build
+        id: run-pytest
         run: |
           which pytest
           pytest tests -v          
