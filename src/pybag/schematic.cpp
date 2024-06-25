@@ -310,8 +310,10 @@ void implement_netlist(
                                   cbag::sch::cellview_info(*cv_info_ptr));
     }
 
-    // don't add BAG_prim in dut and harness spectre netlists; only testbench netlist will define those
+    // don't add BAG_prim in dut and harness simulation netlists; only testbench netlist will define those
     if ((format == cbag::design_output::SPECTRE) && top_subckt)
+        append_file.clear();
+    else if ((format == cbag::design_output::NGSPICE) && top_subckt)
         append_file.clear();
 
     if (cv_netlist_list.size() != 0) {

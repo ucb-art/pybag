@@ -97,6 +97,8 @@ pyg::List<std::string> get_cdba_name_bits(const std::string &name,
         return _get_name_bits_helper<cbag::spirit::namespace_verilog>(name);
     case cbag::design_output::SPECTRE:
         return _get_name_bits_helper<cbag::spirit::namespace_spectre>(name);
+    case cbag::design_output::NGSPICE:
+        return _get_name_bits_helper<cbag::spirit::namespace_ngspice>(name);
     default:
         throw std::invalid_argument("Unknown design output code: " +
                                     std::to_string(design_output_code));
@@ -118,6 +120,8 @@ py::str convert_cdba_name_bit(const std::string &name,
         return _convert_name_bit_helper<cbag::spirit::namespace_verilog>(name);
     case cbag::design_output::SPECTRE:
         return _convert_name_bit_helper<cbag::spirit::namespace_spectre>(name);
+    case cbag::design_output::NGSPICE:
+        return _convert_name_bit_helper<cbag::spirit::namespace_ngspice>(name);
     default:
         throw std::invalid_argument("Unknown design output code: " +
                                     std::to_string(design_output_code));

@@ -58,6 +58,7 @@ class DesignOutput(IntEnum):
     SYSVERILOG = 6
     SPECTRE = 7
     OASIS = 8
+    NGSPICE = 9
 
     @property
     def extension(self) -> str:
@@ -75,6 +76,8 @@ class DesignOutput(IntEnum):
             return 'scs'
         elif self is DesignOutput.OASIS:
             return 'oasis'
+        elif self is DesignOutput.NGSPICE:
+            return 'cir'
         else:
             raise ValueError(f'Unsupported output type: {self.name}')
 
@@ -84,7 +87,7 @@ class DesignOutput(IntEnum):
 
     @property
     def is_netlist(self) -> bool:
-        return self is DesignOutput.CDL or self is DesignOutput.SPECTRE
+        return self is DesignOutput.CDL or self is DesignOutput.SPECTRE or self is DesignOutput.NGSPICE
 
     @property
     def fallback_model_type(self) -> DesignOutput:
