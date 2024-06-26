@@ -1,10 +1,7 @@
 # Setup script
-# TODO: add clean up script
 
 # CHANGE THIS
-# export CONDA_ENV_PATH=/tools/conda/miniconda3/envs/bag_py3d7_c
 export CONDA_ENV_PATH=${CONDA}/envs/bag_py3d7_c
-#export CONDA_ENV_PATH=${BAG_PYTHON_ROOT}
 
 export CC=gcc-8
 export CXX=g++-8

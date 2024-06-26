@@ -1,9 +1,16 @@
 # PYBAG
 
-Python wrapper for [CBAG](https://github.com/bluecheetah/cbag) library.
+Python wrapper for [CBAG](https://github.com/ucb-art/cbag) library for BAG3++.
 
-This is a fork of [PYBAG] (https://github.com/ucb-art/pybag), which as of May 13th, 2019,
-has been taken offline temporarily.
+## Setup
+
+This library should be used with [BAG3++](https://github.com/ucb-art/bag). To setup BAG, follow the instructions outlined on the [RTD page](https://bag3-readthedocs.readthedocs.io/en/latest/dependencies/).
+
+Alternative, if you are using Ubuntu, you can use the `setup_script.sh` under the `setup` directory. This runs the steps described in the RTD page above. See the `setup/README.md` for discussion.
+
+To build the `pybag` library, run `./run_test.sh`. This will compile `cbag` as well as create the `pybag` Python wrappers for `BAG`.
+
+Running `./run_test.sh`requires the `PYBAG_PYTHON` environment variable be set to the Python from your Miniconda install from the setup process.
 
 ## Licensing
 

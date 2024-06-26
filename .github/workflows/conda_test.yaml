@@ -1,3 +1,4 @@
+# Testing if we can install Conda successfully. Sanity checking the CI flow.
 name: conda-test
 
 on: [push]
