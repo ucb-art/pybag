@@ -33,12 +33,14 @@ cmake --build _build --target install -- -j 4
 cd ../
 
 # libfyaml
-git clone -b v0.9 https://github.com/pantoniou/libfyaml.git
+# Use an older version to avoid AVX compilation issues in gcc-8.
+# Better solution is to disable AVX512.
+# This is fixed in gcc-9.X
+# https://github.com/linbox-team/fflas-ffpack/issues/284
+git clone -b v0.8 https://github.com/pantoniou/libfyaml.git
 cd libfyaml
 ./bootstrap.sh
-# Disable AVX512 on gcc-8 machines
-# https://github.com/linbox-team/fflas-ffpack/issues/284
-./configure --prefix=$CONDA_ENV_PATH --disable-avx512f --disable-avx512dq --disable-avx512vl
+./configure --prefix=$CONDA_ENV_PATH
 make -j12
 make install
 cd ../

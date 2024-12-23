@@ -1,4 +1,6 @@
-# Test if libfyaml can compile. Historically, we had an AVX issue with compiling on GCC-8 on Ubuntu 20.04.
+# Test if libfyaml can compile. I encountered an AVX issue with compiling on GCC-8 on Ubuntu 20.04.
+# The chosen fix is to revert to an older version. Compatibility is likely not an issue.
+# Better solution is to disable AVX through compiler flags.
 # This bug is resolved on GCC-9 and later.
 name: test-libfyaml
 
@@ -43,8 +45,6 @@ jobs:
           echo "CC=gcc-8" >> "$GITHUB_ENV"
           echo "CXX=g++-8" >> "$GITHUB_ENV"
       - name: Pull libfyaml
-        # run: git clone -b v0.6.3 https://github.com/pantoniou/libfyaml.git
-        # run: git clone -b v0.7.12 https://github.com/pantoniou/libfyaml.git
         run: git clone -b v0.8 https://github.com/pantoniou/libfyaml.git
       - name: Bootstrap
         run: |
