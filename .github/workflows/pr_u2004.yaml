@@ -1,5 +1,5 @@
-# CI flow
-name: pybag-pr-ci
+# CI flow for Ubuntu 20.04
+name: pybag-pr-ci_u2004
 
 on:
   push:
@@ -58,7 +58,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
+            conda-${{ runner.os }}-2004--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
             hashFiles('environment.yml') }}-${{
             env.CACHE_NUMBER }}
@@ -96,7 +96,7 @@ jobs:
         with:
           path: _build
           key:
-            build-${{ runner.os }}--${{ runner.arch }}--${{
+            build-${{ runner.os }}-2004--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
             env.CACHE_NUMBER }}
         env:
@@ -139,7 +139,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs/${{ env.CONDA_ENV_NAME }}
           key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
+            conda-${{ runner.os }}-2004--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
             hashFiles('environment.yml') }}-${{
             env.CACHE_NUMBER }}
@@ -152,7 +152,7 @@ jobs:
         with:
           path: _build
           key:
-            build-${{ runner.os }}--${{ runner.arch }}--${{
+            build-${{ runner.os }}-2004--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
             env.CACHE_NUMBER }}
         env:
