@@ -151,10 +151,6 @@ setup(
     license='Apache-2.0',
     install_requires=[],
     setup_requires=[],
-    tests_require=[
-        'pytest',
-        'pytest-xdist',
-    ],
     packages=[
         pkg_name,
     ],
