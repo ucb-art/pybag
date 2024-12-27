@@ -4,10 +4,7 @@
 # This bug is resolved on GCC-9 and later.
 name: test-libfyaml
 
-on:
-  push:
-  schedule:
-    - cron: '0 9 * * *'  # 9AM UTC = 2AM PST
+on: [push]
 
 jobs:
   build:
